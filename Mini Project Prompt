@@ -1,0 +1,372 @@
+You are a senior full-stack web developer.
+
+Build a complete responsive web application for a “Student Assignment Tracking and Grading System” with 2 user roles: Teacher and Student.
+
+The web app must help students track pending assignments, view scores for each assignment, receive deadline reminders, and automatically see updated grades when teachers score their work.
+
+Teachers must be able to create assignments, set due dates, view student submissions, grade them, leave comments, and have those updates automatically shown to students.
+
+Use this tech stack:
+- Frontend: Next.js 14 (App Router) + TypeScript + Tailwind CSS
+- Backend: Next.js API Routes / Server Actions
+- Database: PostgreSQL
+- ORM: Prisma
+- Authentication: NextAuth
+- Validation: Zod
+- State/Data fetching: React Query
+- Realtime updates: Pusher or Socket.io
+- Notifications: in-app notifications
+- Optional email simulation for reminder notifications
+
+The generated code must be clean, modular, reusable, and ready to run locally.
+
+========================================
+1. USER ROLES
+========================================
+
+There are 2 roles:
+
+1) Student
+- Register and login
+- View dashboard
+- View all assignments
+- See assignment statuses:
+  - Pending
+  - Upcoming
+  - Submitted
+  - Waiting for grade
+  - Graded
+  - Overdue
+  - Missing
+- Submit assignments
+- View scores and teacher comments
+- Receive notifications about:
+  - deadlines coming soon
+  - due today
+  - overdue
+  - graded assignments
+  - updated teacher comments
+
+2) Teacher
+- Register and login
+- Create and manage classes
+- Create subjects
+- Create assignments
+- Set title, description, due date, full score, and optional attachment
+- View all student submissions
+- Grade each submission
+- Add comments/feedback
+- Edit grades later
+- When grading is saved, the student must automatically see the updated score
+
+========================================
+2. REQUIRED PAGES
+========================================
+
+Public pages:
+- /login
+- /register
+
+Student pages:
+- /student/dashboard
+- /student/assignments
+- /student/assignments/[id]
+- /student/grades
+- /student/notifications
+- /student/profile
+
+Teacher pages:
+- /teacher/dashboard
+- /teacher/classes
+- /teacher/classes/[id]
+- /teacher/assignments
+- /teacher/assignments/create
+- /teacher/assignments/[id]
+- /teacher/submissions/[id]
+- /teacher/notifications
+- /teacher/profile
+
+========================================
+3. STUDENT DASHBOARD
+========================================
+
+Student dashboard must show:
+- total assignments
+- pending assignments
+- upcoming deadlines
+- submitted assignments
+- graded assignments
+- latest scores
+- recent notifications
+
+========================================
+4. TEACHER DASHBOARD
+========================================
+
+Teacher dashboard must show:
+- total classes
+- total assignments
+- total student submissions
+- submissions waiting for review
+- recently graded work
+- summary statistics
+
+========================================
+5. DATABASE MODELS
+========================================
+
+Create Prisma models for:
+- User
+- StudentProfile
+- TeacherProfile
+- Class
+- Subject
+- Enrollment
+- Assignment
+- Submission
+- Grade
+- Notification
+
+User fields:
+- id
+- name
+- email
+- password
+- role
+- createdAt
+- updatedAt
+
+StudentProfile:
+- id
+- userId
+- studentCode
+
+TeacherProfile:
+- id
+- userId
+- teacherCode
+
+Class:
+- id
+- name
+- description
+- teacherId
+
+Subject:
+- id
+- name
+- classId
+
+Enrollment:
+- id
+- classId
+- studentId
+
+Assignment:
+- id
+- subjectId
+- createdById
+- title
+- description
+- dueDate
+- fullScore
+- attachmentUrl
+- createdAt
+- updatedAt
+
+Submission:
+- id
+- assignmentId
+- studentId
+- content
+- fileUrl
+- status
+- submittedAt
+- updatedAt
+
+Grade:
+- id
+- submissionId
+- score
+- feedback
+- gradedById
+- gradedAt
+- updatedAt
+
+Notification:
+- id
+- userId
+- title
+- message
+- type
+- isRead
+- relatedAssignmentId
+- createdAt
+
+Create enums for:
+- UserRole
+- SubmissionStatus
+- NotificationType
+
+========================================
+6. BUSINESS LOGIC
+========================================
+
+Implement these rules:
+
+- Teachers create assignments for a class/subject.
+- Students can see only assignments for their enrolled classes.
+- Students can submit work before or after due date.
+- If due date is passed and no submission exists, assignment status becomes Overdue or Missing.
+- If submission exists but not graded yet, status is Waiting for grade.
+- If teacher enters a score, status becomes Graded.
+- When a teacher grades a submission:
+  - save grade
+  - update submission status
+  - create notification for the student
+  - trigger real-time update so the student sees the new score immediately
+
+- Create scheduled reminder logic for notifications:
+  - 7 days before due date
+  - 3 days before due date
+  - 1 day before due date
+  - on due date
+  - after overdue
+
+========================================
+7. API ENDPOINTS
+========================================
+
+Create secure API routes with role-based access:
+
+Auth:
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/logout
+- GET /api/auth/me
+
+Student:
+- GET /api/student/dashboard
+- GET /api/student/assignments
+- GET /api/student/assignments/:id
+- POST /api/student/assignments/:id/submit
+- GET /api/student/grades
+- GET /api/student/notifications
+- PATCH /api/student/notifications/:id/read
+
+Teacher:
+- GET /api/teacher/dashboard
+- GET /api/teacher/classes
+- POST /api/teacher/classes
+- GET /api/teacher/classes/:id
+- GET /api/teacher/assignments
+- POST /api/teacher/assignments
+- GET /api/teacher/assignments/:id
+- PATCH /api/teacher/assignments/:id
+- DELETE /api/teacher/assignments/:id
+- GET /api/teacher/assignments/:id/submissions
+- POST /api/teacher/submissions/:id/grade
+- PATCH /api/teacher/submissions/:id/grade
+
+Notifications:
+- GET /api/notifications
+- PATCH /api/notifications/:id/read
+
+========================================
+8. UI/UX REQUIREMENTS
+========================================
+
+Design a clean and modern education dashboard UI using Tailwind CSS.
+
+Requirements:
+- responsive layout
+- sidebar navigation
+- top navbar
+- dashboard statistic cards
+- assignment tables
+- status badges
+- notifications dropdown
+- grade modal or grading form
+- loading states
+- empty states
+- validation messages
+- toast notifications
+- search and filtering
+
+Suggested colors:
+- blue/indigo for primary
+- green for graded/submitted
+- yellow for upcoming
+- red for overdue/missing
+
+========================================
+9. PROJECT STRUCTURE
+========================================
+
+Generate a maintainable production-style folder structure.
+
+Include:
+- app/
+- components/
+- lib/
+- prisma/
+- types/
+- hooks/
+- providers/
+- middleware.ts
+
+========================================
+10. IMPLEMENTATION REQUIREMENTS
+========================================
+
+Generate code in file-by-file format.
+
+For every file:
+- print file path first
+- then print complete code
+- include imports
+- avoid pseudocode
+- ensure code is runnable
+- use TypeScript everywhere
+
+Generate:
+1. folder structure
+2. package.json
+3. .env.example
+4. prisma/schema.prisma
+5. prisma/seed.ts
+6. auth setup
+7. prisma client
+8. utility functions
+9. role-based middleware
+10. API routes
+11. reusable layout/components
+12. student pages
+13. teacher pages
+14. notification system
+15. real-time update integration
+16. README with setup instructions
+
+========================================
+11. SAMPLE DATA
+========================================
+
+Add seed data for:
+- 1 teacher
+- 5 students
+- 1 class
+- 2 subjects
+- 6 assignments
+- submissions
+- grades
+- notifications
+
+========================================
+12. OUTPUT FORMAT
+========================================
+
+Use this exact format:
+
+FILE: path/to/file
+```ts
+// full code here
